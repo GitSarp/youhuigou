@@ -238,7 +238,7 @@ export default {
 	},
 	//上拉加载，需要自己在page.json文件中配置"onReachBottomDistance"
 	onReachBottom() {
-		uni.showToast({ title: '触发上拉加载' });
+		//uni.showToast({ title: '触发上拉加载' });
 		let len = this.productList.length;
 		if (len >= 40) {
 			this.loadingText = '到底了';
