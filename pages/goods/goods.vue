@@ -189,6 +189,7 @@
 </template>
 
 <script>
+	import helper from "@/common/header.js";
 export default {
 	data() {
 		return {
@@ -275,6 +276,7 @@ export default {
 				//todo 测试代码
 				//url: 'http://localhost:8080/wechat/goods/detail',
 				url: '/wechat/goods/detail',
+				header: helper.getHeader(),
 				data: {
 					goodsId: this.goodsData.id,
 					/* 					    appid: plus.runtime.appid,
