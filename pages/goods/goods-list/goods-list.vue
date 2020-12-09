@@ -2,11 +2,11 @@
 	<view>
 		<view class="header" :style="{position:headerPosition,top:headerTop}">
 			<!-- 搜索框 -->
-			<view class="input-box">
+			<view v-if="!isEmpty(search)" class="input-box">
 				<input placeholder="默认关键字" placeholder-style="color:#c0c0c0;" @confirm="reload()" v-model="search" />
 				<view class="icon search"></view>
 			</view>
-			<view class="target" v-for="(target,index) in orderbyList" @tap="select(index)" :key="index" :class="[target.selected?'on':'']">
+			<view class="target" v-if="!isEmpty(search)" v-for="(target,index) in orderbyList" @tap="select(index)" :key="index" :class="[target.selected?'on':'']">
 				{{target.text}}
 				<view v-if="target.orderbyicon" class="icon" :class="target.orderbyicon[target.orderby]"></view>
 			</view>
@@ -14,7 +14,7 @@
 		<!-- 占位 -->
 		<view class="place"></view>
 		<!-- 商品列表 -->
-		<view class="goods-list">
+		<view v-if="!isEmpty(search)" class="goods-list">
 			<view class="product-list">
 				<view class="product" v-for="(goods,index) in goodsList" :key="index" @tap="toGoods(goods)">
 					<image mode="widthFix" :src="goods.pictUrl"></image>
@@ -22,6 +22,20 @@
 					<view class="info">
 						<view class="price">{{goods.zkFinalPrice}}</view>
 						<view class="slogan">{{goods.provcity}}</view>
+					</view>
+				</view>
+			</view>
+			<view class="loading-text">{{loadingText}}</view>
+		</view>
+		
+		<view v-if="!isEmpty(materialId)" class="goods-list">
+			<view class="product-list">
+				<view class="product" v-for="(goods,index) in optGoodsList" :key="index" @tap="toGoods(goods)">
+					<image mode="widthFix" :src="goods.pictUrl"></image>
+					<view class="name">{{goods.title}}</view>
+					<view class="info">
+						<view class="price">{{goods.zkFinalPrice}}</view>
+						<view class="slogan">优惠券:{{goods.couponAmount}}￥</view>
 					</view>
 				</view>
 			</view>
@@ -35,9 +49,8 @@
 	export default {
 		data() {
 			return {
-				goodsList: [
-					// { goods_id: 0, img: '/static/img/goods/p1.jpg', name: '商品名称商品名称商品名称商品名称商品名称', price: '￥168', slogan:'1235人付款' },
-				],
+				goodsList: [],
+				optGoodsList: [],
 				loadingText: "正在加载...",
 				headerTop: "0px",
 				headerPosition: "fixed",
@@ -65,25 +78,27 @@
 				],
 				orderby: "sheng",
 				search: "",
+				materialId: "",
 				//总页数
 				pages: 1,
 				pageNo: 1,
 				pageSize: 20,
 				cid: "",
+				//是否已加载全部商品，默认否
 				isLoad: false,
 				//默认销量降序
 				sort: 'total_sales_des'
 			};
 		},
 		onLoad: function(option) { //option为object类型，会序列化上个页面传递的参数
-			//todo 测试代码
-			//option={'cid':'test','name':'女装'};
 			//console.log(option.cid); //打印出上个页面传递的参数。
 			this.cid = option.cid;
+			let title = this.isEmpty(option.search) ? option.materialName:option.search;
 			uni.setNavigationBarTitle({
-				title: option.name
+				title: title
 			});
-			this.search = option.name;
+			this.search = option.search;
+			this.materialId = option.materialId;
 			//兼容H5下排序栏位置
 			// #ifdef H5
 			//定时器方式循环获取高度为止，这么写的原因是onLoad中head未必已经渲染出来。
@@ -116,7 +131,11 @@
 		//上拉加载，需要自己在page.json文件中配置"onReachBottomDistance"
 		onReachBottom() {
 			//uni.showToast({title: '触发上拉加载'});
-			if (this.pageNo >= this.pages) {
+			if(this.isLoad){
+				//再拉一次数据（不增加pageNo），排除网络原因没有数据返回造成的，伪加载完毕
+				this.getGoodsList();
+			}
+			if (this.isLoad) {
 				this.loadingText = "到底了";
 				return false;
 			} else {
@@ -134,32 +153,59 @@
 					this.pageNo = 1;
 					this.goodsList = [];
 				}
-				this.isLoad = false
 				
 				let header = helper.getHeader();
-				uni.request({
-					//todo 测试代码
-					//url: 'http://localhost:8080/wechat/goods/list',
-					url: '/wechat/goods/list',
-					header: header,
-					data: {
-						qry: this.search,
-						//todo 
-						//cat: this.cid,
-						pageNo: this.pageNo,
-						sort: this.sort
-					},
-					success: (res) => {
-						res = res.data
-						if (res.resultList && res.resultList.length > 0) {
-							this.goodsList = this.goodsList.concat(res.resultList)
-							//总页数
-							this.pages = res.totalCount / this.pageSize
-						} else {
-							this.isLoad = true
+				if(!this.isEmpty(this.search)){
+					//通用搜索接口
+					uni.request({
+						//todo 测试代码
+						//url: 'http://localhost:8080/wechat/goods/list',
+						url: '/wechat/goods/list',
+						header: header,
+						data: {
+							qry: this.search,
+							//todo 
+							//cat: this.cid,
+							pageNo: this.pageNo,
+							sort: this.sort
+						},
+						success: (res) => {
+							res = res.data
+							if (res.resultList && res.resultList.length > 0) {
+								this.goodsList = this.goodsList.concat(res.resultList)
+								//总页数
+								this.pages = res.totalCount / this.pageSize
+								this.isLoad = false
+							}else{
+								this.isLoad = true
+							}
 						}
-					}
-				})
+					})
+				}else if(!this.isEmpty(this.materialId)){
+					//物料精选接口
+					uni.request({
+						//todo 测试代码
+						//url: 'http://localhost:8080/wechat/goods/optimus',
+						url: '/wechat/goods/optimus',
+						header: header,
+						data: {
+							materialId: this.materialId,
+							pageNo: this.pageNo
+						},
+						success: (res) => {
+							res = res.data
+							console.log(res);
+							if (res.resultList && res.resultList.length > 0) {
+								this.optGoodsList = this.optGoodsList.concat(res.resultList)
+								//总页数
+								this.pages = res.totalCount / this.pageSize
+								this.isLoad = false
+							} else {
+								this.isLoad = true
+							}
+						}
+					})
+				}
 			},
 			//触底了
 			setReachBottom() {
@@ -169,9 +215,42 @@
 			//商品跳转
 			toGoods(e) {
 				//uni.showToast({title: '商品'+e.goods_id,icon:"none"});
-				uni.navigateTo({
-					url: '../goods?numIid=' + e.numIid
+				let goodsId = this.isEmpty(e.numIid) ? e.itemId:e.numIid;
+				this.getTpwdAndGo(e.title, e.couponShareUrl, goodsId)
+			},
+			//获取淘口令
+			getTpwdAndGo(text, url, numIid){
+				//物料精选接口
+				let header = helper.getHeader();
+				uni.request({
+					//todo 测试代码
+					//url: 'http://localhost:8080/wechat/goods/tpwd',
+					url: '/wechat/goods/tpwd',
+					header: header,
+					data: {
+						url: 'https:'+url,
+						text: text
+					},
+					success: (res) => {
+						//成功再进入详情页
+						uni.navigateTo({
+							url: '../goods?numIid=' + numIid+'&tpwd='+res.data
+						});
+					},
+					fail: (err) => {
+						console.error('获取淘口令失败:'+err)
+						uni.showToast({
+							title: '宝贝暂时无法查看，请刷新后重试'
+						})
+					}
 				});
+			},
+			isEmpty(obj){
+			    if(typeof obj == "undefined" || obj == null || obj == ""){
+			        return true;
+			    }else{
+			        return false;
+			    }
 			},
 			//排序类型
 			select(index) {

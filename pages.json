@@ -36,9 +36,9 @@
 				"app-plus": {
 					"titleNView": false ,//禁用原生导航栏
 					"softinputNavBar":"none",
-					"subNVues":[{  
-						"id": "cartTitleNvue", // 唯一标识  
-						"path": "pages/tabBar/cart/subNvue/cartTitleNvue", // 页面路径  
+					"subNVues":[{
+						"id": "cartTitleNvue", // 唯一标识
+						"path": "pages/tabBar/cart/subNvue/cartTitleNvue", // 页面路径
 						"type":"navigationBar"
 					}]
 				}
@@ -54,9 +54,9 @@
 				"navigationBarTextStyle":"white",
 				"app-plus": {
 					"titleNView": false ,//禁用原生导航栏
-					"subNVues":[{  
-						"id": "userTitleNvue", // 唯一标识  
-						"path": "pages/tabBar/user/subNvue/userTitleNvue", // 页面路径  
+					"subNVues":[{
+						"id": "userTitleNvue", // 唯一标识
+						"path": "pages/tabBar/user/subNvue/userTitleNvue", // 页面路径
 						"type":"navigationBar"
 					}]
 				}
@@ -280,18 +280,6 @@
 				"iconPath": "static/img/tabBar/category.png",
 				"selectedIconPath": "static/img/tabBar/category-on.png",
 				"text": "分类"
-			},
-			{
-				"pagePath": "pages/tabBar/cart/cart",
-				"iconPath": "static/img/tabBar/cart.png",
-				"selectedIconPath": "static/img/tabBar/cart-on.png",
-				"text": "购物车"
-			},
-			{
-				"pagePath": "pages/tabBar/user/user",
-				"iconPath": "static/img/tabBar/user.png",
-				"selectedIconPath": "static/img/tabBar/user-on.png",
-				"text": "我的"
 			}
 		]
 	}

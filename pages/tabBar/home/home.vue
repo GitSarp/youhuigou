@@ -132,7 +132,7 @@ export default {
 			currentSwiper: 0,
 			// 轮播图片
 			swiperList: [
-				{ id: 1, src: 'url1', img: '/static/img/1.jpg' },
+				{ id: 1, src: 'https://mos.m.taobao.com/union/1212shishi2c_2C?pid=mm_1017490020_2163900486_111040950284', img: '/static/img/1.jpg' },
 				{ id: 2, src: 'url2', img: '/static/img/2.jpg' },
 				{ id: 3, src: 'url3', img: '/static/img/3.jpg' }
 			],
@@ -300,17 +300,32 @@ export default {
 			let tmpcountdown = yy + '/' + mm + '/' + dd + ' 23:59:59';
 			let tmpPromotion = [
 				{
+					title: '天天特卖',
+					ad: '天天特卖专区',
+					img: '/static/img/s1.jpg',
+					countdown: false,
+					materialId: '31362'
+				},
+				{
+					title: '特惠商品',
+					ad: '特惠商品专区',
+					img: '/static/img/s2.jpg',
+					countdown: false,
+					materialId: '4094'
+				},
+/* 				{
 					title: '整点秒杀',
 					ad: '整天秒杀专区',
 					img: '/static/img/s1.jpg',
 					countdown: false
-				},
-				{
+				}, */
+/* 				{
 					title: '限时抢购',
 					ad: '每天23点上线',
 					img: '/static/img/s2.jpg',
-					countdown: tmpcountdown
-				} //countdown为目标时间，程序会获取当前时间倒数
+					countdown: tmpcountdown,
+					materialId: '31362'
+				} *///countdown为目标时间，程序会获取当前时间倒数
 			];
 			//检查倒计时
 			for (let i = 0; i < tmpPromotion.length; i++) {
@@ -390,24 +405,28 @@ export default {
 		toSearch() {
 			//uni.showToast({ title: '建议跳转到新页面做搜索功能' });
 			uni.navigateTo({
-				url: '../../goods/goods-list/goods-list?name='+this.search
+				url: '../../goods/goods-list/goods-list?search='+this.search
 			});
 		},
 		//轮播图跳转
 		toSwiper(e) {
-			uni.showToast({ title: e.src, icon: 'none' });
+			//uni.showToast({ title: e.src, icon: 'none' });
+			window.location.href = e.src
 		},
 		//分类跳转
 		toCategory(e) {
 			//uni.showToast({title: e.name,icon:"none"});
 			uni.setStorageSync('catName',e.name);
 			uni.navigateTo({
-				url: '../../goods/goods-list/goods-list?cid='+e.id+'&name='+e.name
+				url: '../../goods/goods-list/goods-list?cid='+e.id+'&search='+e.name
 			});
 		},
 		//推荐商品跳转
 		toPromotion(e) {
-			uni.showToast({ title: e.title, icon: 'none' });
+			//uni.showToast({ title: e.title, icon: 'none' });
+			uni.navigateTo({
+				url: '../../goods/goods-list/goods-list?materialId='+e.materialId+'&materialName='+e.title
+			});
 		},
 		//商品跳转
 		toGoods(e) {
