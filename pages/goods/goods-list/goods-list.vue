@@ -215,8 +215,15 @@
 			//商品跳转
 			toGoods(e) {
 				//uni.showToast({title: '商品'+e.goods_id,icon:"none"});
-				let goodsId = this.isEmpty(e.numIid) ? e.itemId:e.numIid;
-				this.getTpwdAndGo(e.title, e.couponShareUrl, goodsId)
+				let goodsId = this.isEmpty(e.numIid) ? e.itemId : e.numIid;
+				let url = e.couponShareUrl;
+				if(this.isEmpty(url)){
+					url = e.clickUrl
+				}
+				if(this.isEmpty(url)){
+					url = e.url
+				}
+				this.getTpwdAndGo(e.title, url, goodsId)
 			},
 			//获取淘口令
 			getTpwdAndGo(text, url, numIid){
