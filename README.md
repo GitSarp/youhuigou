@@ -1,6 +1,4 @@
 
-一款购物领券的h5页面，基于此[商城模板](https://ext.dcloud.net.cn/plugin?id=267)开发，目前尚在开发中。
+一款购物领券微信小程序“乐逛Style”的前端页面，代码已迁移至私库。基于此[uniCloud模板](https://ext.dcloud.net.cn/plugin?id=267)开发
 
-[![Dj1eX9.png](https://s3.ax1x.com/2020/12/06/Dj1eX9.png)](https://imgchr.com/i/Dj1eX9)
-
-代码已迁移至私库，效果见微信小程序“乐逛Style”
+![leguang](https://user-images.githubusercontent.com/14067824/161179449-cdf4c094-f7e6-46b3-86c2-7784ca4ed783.jpeg)
